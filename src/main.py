@@ -11,12 +11,12 @@ cap.set(4,720)
 cap.set(10,70)
 
 classNames= []
-classFile = 'models/coco.names'
+classFile = './resources/coco.names'
 with open(classFile,'rt') as f:
     classNames = f.read().rstrip('\n').split('\n')
 
-configPath = 'models/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
-weightsPath = 'models/frozen_inference_graph.pb'
+configPath = './resources/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
+weightsPath = './resources/frozen_inference_graph.pb'
 
 
 net = cv2.dnn_DetectionModel(weightsPath,configPath)
@@ -29,14 +29,25 @@ confidenceScore = 0 # if value is above 0.7, active punishment
 
 efficencyMetric = 0
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 while True:
     success,img = cap.read()
     classIds, confs, bbox = net.detect(img,confThreshold=thres)
 
     if 77 in classIds:
-        print("OFF TASK    !!!   Cell Phone Detected")
+        print(f"{bcolors.FAIL}OFF TASK          Cell Phone Detected{bcolors.ENDC}")
     else:
-        print("ON TASK           No Cell Phone Detected")
+        print(f"{bcolors.OKGREEN}ON TASK           No Cell Phone Detected{bcolors.ENDC}")
 
     if len(classIds) != 0:
         for classId, confidence,box in zip(classIds.flatten(),confs.flatten(),bbox):
